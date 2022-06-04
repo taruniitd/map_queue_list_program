@@ -1,0 +1,54 @@
+//https://www.geeksforgeeks.org/lru-cache-implementation/
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+
+#define dqSize 4
+
+void referQueue(list<int> &dq, unordered_map<int, list<int>::iterator> &mapPageTable, int val )
+{
+    if(mapPageTable.find(val) == mapPageTable.end())
+    {
+        if(dq.size() == dqSize)
+        {
+        
+            int last = dq.back();
+            dq.pop_back();
+        
+            mapPageTable.erase(last);
+            cout << "erase val : " << last << endl;
+        }
+    }
+    else
+    {
+            cout << "erase old val : " << val << endl;
+        dq.erase(mapPageTable[val]);
+    }
+    
+    dq.push_front(val);
+    mapPageTable[val] = dq.begin();
+        cout << "pushed val : " << val << endl;
+    return;
+}
+
+void display(list<int> dq)
+{
+    for(auto iter = dq.begin(); iter != dq.end(); iter++)
+    {
+        cout << *iter << endl;
+    }
+}
+
+int main() {
+    list<int> dq;
+    unordered_map<int, list<int>:: iterator> mapPageTable;
+    
+    referQueue(dq, mapPageTable, 1);
+    referQueue(dq, mapPageTable, 2);
+    referQueue(dq, mapPageTable, 3);
+    referQueue(dq, mapPageTable, 1);
+    referQueue(dq, mapPageTable, 4);
+    referQueue(dq, mapPageTable, 5);
+    display(dq);
+	return 0;
+}
