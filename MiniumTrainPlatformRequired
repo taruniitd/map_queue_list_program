@@ -1,0 +1,71 @@
+//https://www.geeksforgeeks.org/minimum-number-platforms-required-railwaybus-station/
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+
+int findMaxPlatformsUsingSort(int arrival[], int dep[], int n)
+{
+    sort(arrival, arrival + n);
+    sort(dep, dep + n);
+    
+    int platform_needed = 1, result = 1;
+    int i = 1, j = 0;
+    while(i < n && j < n)
+    {
+        if(arrival[i] <= dep[j])
+        {
+            platform_needed++;
+            i++;
+        }
+        else if(arrival[i] > dep[j])
+        {
+            platform_needed--;
+            j++;
+        }
+        if(platform_needed > result)
+        {
+            result = platform_needed;
+        }
+    }
+    return result;
+}
+
+int findMaxPlatforms(int arrival[], int dep[], int n)
+{
+    vector<pair<int, int>> bothTiming(n);
+    for(int i = 0; i < n; i++)
+    {
+        bothTiming[i] = { arrival[i], dep[i] };
+    }
+    //cout << "sort arrays " << endl;
+    sort(bothTiming.begin(), bothTiming.end());
+    priority_queue<int, vector<int>, greater<int>> pq;
+    int count = 1;
+    pq.push(bothTiming[0].second);
+    //cout << "n = " << endl;
+    for(int i = 1; i < n; i++)
+    {
+            if(pq.top() >= bothTiming[i].first)
+            {
+                count++;
+            }
+            else
+            {
+                pq.pop();
+            }
+            pq.push(bothTiming[i].second);
+        
+    }
+    return count;
+}
+
+int main()
+{
+    int arrival[] = { 900, 940, 950, 1100, 1500, 1800 };
+    int dep[]     = { 910, 1200, 1120, 1130, 1900, 2000 };
+    
+    int n = sizeof(arrival) / sizeof(arrival[0]);
+    cout << "Max platform required : " << findMaxPlatforms(arrival, dep, n);
+    cout << "Max platform required 2: " << findMaxPlatformsUsingSort(arrival, dep, n);
+    return 0;
+}
