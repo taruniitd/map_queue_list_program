@@ -1,0 +1,107 @@
+//https://www.programcreek.com/2013/12/in-place-reorder-a-singly-linked-list-in-java/
+#include <iostream>
+using namespace std;
+
+class node
+{
+    public:
+    int val;
+    node* next;
+    
+        node(int data)
+        {
+            val = data;
+            next = nullptr;
+        }
+};
+
+void printList(node *root)
+{
+    while(root != nullptr)
+    {
+        cout << root->val << "  ";
+        root = root->next;
+    }
+    
+    cout << endl;
+}
+
+node* reverseList(node *root)
+{
+    if(root == nullptr || root->next == nullptr)
+    {
+        return root;
+    }
+    
+    node *prev = root;
+    node *cur = root->next;
+    
+    while(cur != nullptr)
+    {
+        node *temp = cur->next;
+        cur->next = prev;
+        prev = cur;
+        cur = temp;
+    }
+    
+    root->next = nullptr;
+    return prev;
+}
+void reorderList(node *root)
+{
+    if(root != nullptr && root->next != nullptr)
+    {
+        node *slow_ptr, *fast_ptr;
+        slow_ptr = root;
+        fast_ptr = root;
+        
+        while(fast_ptr != nullptr && fast_ptr->next != nullptr && fast_ptr->next->next != nullptr)
+        {
+            slow_ptr = slow_ptr->next;
+            fast_ptr = fast_ptr->next->next;
+        }
+        
+        node *second = slow_ptr->next;
+        slow_ptr->next = nullptr;
+        
+        second = reverseList(second);
+        
+        node *front = root;
+        node *rear = second;
+        
+        while(rear != nullptr)
+        {
+            node *temp1 = front->next;
+            node * temp2 = rear->next;
+            
+            front->next = rear;
+            rear->next = temp1;
+            
+            front = temp1;
+            rear = temp2;
+        }
+    }
+}
+int main()
+{
+    node *n1 = new node(1);
+    node *n2 = new node(2);
+    node *n3 = new node(3);
+    node *n4 = new node(4);
+    node *n5 = new node(5);
+    node *n6 = new node(6);
+    
+    n1->next = n2;
+    n2->next = n3;
+    n3->next = n4;
+    n4->next = n5;
+    n5->next = n6;
+    
+    printList(n1);
+    
+    reorderList(n1);
+    
+    printList(n1);
+    return 0;
+   
+}
