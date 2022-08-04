@@ -1,0 +1,170 @@
+// detect cycle
+#include <iostream>
+#include <unordered_set>
+using namespace std;
+
+typedef struct node
+{
+    int data;
+    node* next;
+    int flag;
+} node;
+
+void push(node** head, int new_val)
+{
+    node* new_node = new node;
+    new_node->data = new_val;
+    new_node->flag = 0;
+    new_node->next = *head;
+    *head = new_node;
+}
+
+bool detect_cycle_using_set(node* root)
+{
+    unordered_set<node*> cur_set;
+    
+    while(root != nullptr)
+    {
+        if(cur_set.find(root) != cur_set.end())
+        {
+            return true;
+        }
+        
+        cur_set.insert(root);
+        root = root->next;
+    }
+    return false;
+}
+
+bool detect_cycle_using_visited_flag(node* root)
+{
+    while(root != nullptr)
+    {
+        if(root->flag == 1)
+            return true;
+        root->flag = 1;
+        root = root->next;
+    }
+    return false;
+    
+}
+
+bool detect_cycle_using_floyd_cycle(node* root)
+{
+    node* slow_ptr = root, *fast_ptr = root;
+    
+    while(slow_ptr && fast_ptr && fast_ptr->next)
+    {
+        slow_ptr = slow_ptr->next;
+        fast_ptr = fast_ptr->next->next;
+        if(slow_ptr == fast_ptr)
+            return true;
+    }
+    return false;
+}
+
+bool detect_cycle_using_temp_node(node* root)
+{
+    node* temp = new node;
+    
+    while(root != nullptr)
+    {
+        if(root->next == nullptr)
+            return false;
+        if(root->next == temp)
+            return true;
+        
+        node* next = root->next;
+        root->next = temp;
+        root = next;
+    }
+    return false;
+}
+
+int distance_length(node* first, node* last)
+{
+    int counter = 0;
+    node* cur;
+    cur = first;
+    
+    while(cur != last)
+    {
+        counter += 1;
+        cur = cur->next;
+    }
+    
+    return counter + 1;
+    
+}
+
+bool detect_cycle_using_distance_length(node* root)
+{
+    node* temp = new node;
+    
+    node* first, *last;
+    
+    first = root;
+    last = root;
+    
+    int cur_length = 0;
+    int prev_length = -1;
+    
+    while(cur_length > prev_length && last != nullptr)
+    {
+        prev_length = cur_length;
+        cur_length = distance_length(first , last);
+        last = last->next;
+    }
+    if(last == nullptr)
+        return false;
+    else    
+        return true;
+}
+
+bool detect_cycle_using_negative_val(node* root)
+{
+    if(!root)
+        return 0;
+    else
+    {
+        while(root)
+        {
+            if(root->data == -1)
+                return true;
+            else
+            {
+                root->data = -1;
+                root = root->next;
+            }
+        }
+        return false;
+    }
+    
+}
+
+int main()
+{
+    node* root = nullptr;
+    push(&root, 10);
+    push(&root, 20);
+    push(&root, 30);
+    push(&root, 40);
+    push(&root, 50);
+    
+    root->next->next->next->next->next = root->next;
+    if(detect_cycle_using_set(root))
+        cout << "loop found using set" << endl;
+        
+    if(detect_cycle_using_visited_flag(root))
+        cout << "loop found using visited flag" << endl;
+    if(detect_cycle_using_floyd_cycle(root))
+        cout << "loop found using floyd cycle" << endl;
+    if(detect_cycle_using_distance_length(root))
+        cout << "loop found using distance length" << endl;
+    if(detect_cycle_using_negative_val(root))
+        cout << "loop found using negative val" << endl;
+    if(detect_cycle_using_temp_node(root))
+        cout << "loop found using temp node" << endl;
+    
+    return 0;
+}
