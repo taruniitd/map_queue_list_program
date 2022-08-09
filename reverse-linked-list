@@ -1,0 +1,159 @@
+//https://www.geeksforgeeks.org/reverse-a-linked-list/
+#include <iostream>
+#include <stack>
+using namespace std;
+
+typedef struct Node
+{
+    int data;
+    Node* next;
+    Node(int val)
+    {
+        data = val;
+        next = nullptr;
+    }
+} Node;
+
+struct LinkedList
+{
+    Node* head;
+    LinkedList()
+    {
+        head = nullptr;
+    }
+    void reverse_naive()
+    {
+        Node* current = head;
+        Node* prev = nullptr;
+        Node *temp_next = nullptr;
+        
+        while(current != nullptr)
+        {
+            temp_next = current->next;
+            current->next = prev;
+            prev = current;
+            current = temp_next;
+        }
+        head = prev;
+    }
+    Node* reverse(Node* cur_head)
+    {
+        if(cur_head == nullptr || cur_head->next == nullptr)
+            return cur_head;
+        //cout << " Befroe : " << head->data << "  " << endl;
+        Node* rest = reverse(cur_head->next);
+        cur_head->next->next = cur_head;
+        cout << cur_head->data << "  " << endl;
+        cur_head->next = nullptr;
+        return rest;
+    }
+    
+    void reverseUtil(Node* cur_head, Node* prev, Node** head)
+    {
+        if(!cur_head->next)
+        {
+            *head = cur_head;
+            cur_head->next = prev;
+            return;
+        }
+        Node* next = cur_head->next;
+        cur_head->next = prev;
+        reverseUtil(next, cur_head, head);
+    }
+    void reverse_2(Node** cur_head)
+    {
+        if(!cur_head)
+            return;
+        reverseUtil(*cur_head, nullptr, cur_head);
+    }
+    void reverse_using_stack(Node** cur_head)
+    {
+        stack<Node*> cur_stack;
+        Node* temp = *cur_head;
+        
+        while(temp->next != nullptr)
+        {
+            cur_stack.push(temp);
+            temp = temp->next;
+        }
+        *cur_head = temp;
+        
+        while(!cur_stack.empty())
+        {
+            temp->next = cur_stack.top();
+            cur_stack.pop();
+            temp = temp->next;
+        }
+        temp->next = nullptr;
+    }
+    int count()
+    {
+        Node* p = head;
+        int k = 1;
+        while(p != nullptr)
+        {
+            p = p->next;
+            k++;
+        }
+        return k;
+    }
+    Node* reverse_using_array()
+    {
+        Node* p = head;
+        long int i = count(), j = 1;
+        long int arr[i];
+        
+        while( i && p != nullptr)
+        {
+            arr[j++] = p->data;
+            p = p ->next;
+            i--;
+        }
+        j--;
+        while(j)
+            cout << arr[j--] << "  ";
+        return head;
+    }
+    void print()
+    {
+        Node* temp = head;
+        while(temp != nullptr)
+        {
+            cout << temp->data << "  ";
+            temp = temp->next;
+        }
+        cout << endl;
+        return;
+    }
+    void push(int data)
+    {
+        Node* temp = new Node(data);
+        temp->next = head;
+        head = temp;
+    }
+};
+
+int main()
+{
+    LinkedList new_list;
+    new_list.push(40);
+    new_list.push(30);
+    new_list.push(20);
+    new_list.push(10);
+    
+    new_list.head = new_list.reverse(new_list.head);
+    
+    new_list.print();
+    
+    new_list.reverse_naive();
+    new_list.print();
+    
+    new_list.reverse_2(&new_list.head);
+    new_list.print();
+    
+    new_list.reverse_using_stack(&new_list.head);
+    new_list.print();
+    
+    new_list.reverse_using_array();
+    
+}
